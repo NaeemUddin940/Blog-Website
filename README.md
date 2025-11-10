@@ -12,7 +12,7 @@ A **complete full-stack web application** built with **Next.js (frontend)** and 
 | **Backend** | Express.js + Node.js |
 | **Database** | MongoDB (Mongoose) |
 | **Language** | JavaScript / TypeScript |
-| **Deployment** | Vercel (Frontend) + Render / Railway (Backend) |
+| **Deployment** | One and Only Render |
 | **Auth (Optional)** | JWT / NextAuth / Clerk |
 
 ---
