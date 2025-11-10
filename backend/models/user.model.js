@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { env } from "../lib/env.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -53,6 +55,27 @@ userSchema.pre("save", async function (next) {
     console.error("Failed To Bcrypt Password", error);
   }
 });
+
+// Generate Token
+userSchema.statics.generateToken = async function (userId, res) {
+  if (res.headersSent) return;
+  const token = jwt.sign({ userId }, env.JWT_SECRET, {
+    expiresIn: env.JWT_EXPIRES_IN,
+  });
+
+  res.cookie("token", token, {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7days as a Mili Second (MS)
+    httpOnly: true, // prevents XSS attacks: cross-site scripting
+    sameSite: "strict", // CSRF Attacks
+    secure: env.NODE_ENV === "production" ? true : false,
+  });
+  return token;
+};
+
+// Compare Password
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 export default User;
